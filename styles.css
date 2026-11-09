@@ -1,0 +1,24 @@
+.local-notice-modal .modal-body img,
+.local-notice-modal .modal-body video,
+.local-notice-modal .modal-body iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+.local-notice-modal .modal-body iframe {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+}
+
+.local-notice-modal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.local-notice-modal .modal-footer {
+    justify-content: center;
+}
+
+.local-notice-modal .local-notice-ok {
+    min-width: 10rem;
+}
