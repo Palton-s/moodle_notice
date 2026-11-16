@@ -10,10 +10,10 @@ Plugin local para Moodle que permite aos administradores publicar **notícias em
 - **Várias notícias:** se houver mais de uma pendente, elas aparecem em sequência, da mais antiga para a mais nova.
 - **Liga/desliga** geral (todas as notícias) e por notícia.
 - **Agendamento opcional:** datas de início e de fim de exibição.
-- **Contador "Visto por"** em cada notícia.
+- **Contador "Visto por"** em cada notícia, com link para a lista de **quem viu** (busca, filtros, paginação e exportação).
 - **"Exibir novamente para todos":** faz uma notícia reaparecer, inclusive para quem já a fechou.
 - **Pré-visualização** do popup sem contar como visualização.
-- **Privacidade (LGPD/GDPR):** implementa a Privacy API do Moodle (exportação e exclusão dos registros de visualização).
+- **Privacidade (LGPD/GDPR):** implementa a Privacy API do Moodle (exportação e exclusão dos registros de visualização, incluindo IP e navegador).
 
 O popup **não** é exibido:
 
@@ -76,6 +76,31 @@ A página lista todas as notícias com **Título**, **Status** (Ativa, Desativad
 | ↺     | Exibir novamente para todos (zera o "Visto por"; pede confirmação) |
 | 🗑️     | Excluir (pede confirmação; remove também as mídias enviadas)      |
 
+### Quem viu
+
+Clique no número da coluna **Visto por** para abrir a lista de usuários daquela notícia. Para cada visualização são mostrados:
+
+| Coluna                    | Descrição                                                                 |
+|---------------------------|---------------------------------------------------------------------------|
+| **Usuário**               | Foto e nome, com link para o perfil.                                      |
+| Campos de identidade      | Os definidos em *Política de usuários → Mostrar identidade do usuário* (e-mail, número de identificação etc.). |
+| **Vista em**              | Data e hora em que o usuário fechou a notícia.                            |
+| **Tempo na tela**         | Quanto tempo o popup ficou aberto.                                        |
+| **Fechada pelo**          | Botão ou X / tecla Esc.                                                   |
+| **Endereço IP**           | Com link para a localização do IP no Moodle.                              |
+| **Navegador / sistema**   | Ex.: "Chrome 131 · Windows" (o user agent completo aparece ao passar o mouse e na exportação). |
+| **Último acesso ao site** | Último acesso do usuário ao Moodle.                                       |
+
+Recursos da lista:
+
+- **Busca** por nome, e-mail, nome de usuário, número de identificação ou IP;
+- **Filtros:** quem viu / quem **ainda não viu** / todos os usuários ativos, período da visualização e forma de fechamento;
+- **Ordenação** clicando no cabeçalho das colunas e **paginação** (20, 50, 100 ou 250 por página);
+- **Resumo** com quantos usuários ativos já viram a notícia (e a porcentagem);
+- **Exportação** da lista filtrada em CSV, Excel, ODS etc.
+
+> Tempo na tela, forma de fechamento, IP e navegador só são registrados a partir da versão 1.1. Visualizações anteriores aparecem com "–" nessas colunas.
+
 ### Campos da notícia
 
 | Campo                          | Descrição                                                                                 |
@@ -93,6 +118,7 @@ A página lista todas as notícias com **Título**, **Status** (Ativa, Desativad
 | Capability            | Padrão         | Descrição                                       |
 |-----------------------|----------------|-------------------------------------------------|
 | `local/notice:manage` | Gerente (Manager) | Criar, editar, excluir e pré-visualizar notícias. |
+| `local/notice:viewreport` | Gerente (Manager) | Ver a lista de quem viu cada notícia (inclui IP e navegador). Também exige `local/notice:manage`. |
 
 Administradores do site têm todas as permissões. O interruptor geral fica nas configurações do site e, por isso, exige `moodle/site:config`.
 

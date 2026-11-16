@@ -22,3 +22,45 @@
 .local-notice-modal .local-notice-ok {
     min-width: 10rem;
 }
+
+/* "Who saw" report. */
+.local-notice-filters {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+}
+
+.local-notice-filters .local-notice-filter {
+    display: flex;
+    flex-direction: column;
+    min-width: 10rem;
+}
+
+.local-notice-filters .local-notice-filter-search {
+    flex: 1 1 16rem;
+}
+
+.local-notice-filters .local-notice-filter-buttons {
+    flex-direction: row;
+    gap: .5rem;
+    min-width: 0;
+}
+
+.local-notice-filters .form-label {
+    margin-bottom: .25rem;
+}
+
+.local-notice-summary .progress {
+    height: .5rem;
+    max-width: 40rem;
+}
+
+.local-notice-views .local-notice-user {
+    white-space: nowrap;
+}
+
+.local-notice-views .local-notice-user .userpicture {
+    margin-right: .5rem;
+}

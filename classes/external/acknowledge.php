@@ -39,6 +39,8 @@ class acknowledge extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'noticeid' => new external_value(PARAM_INT, 'Notice id'),
+            'duration' => new external_value(PARAM_INT, 'Seconds the notice stayed on screen', VALUE_DEFAULT, 0),
+            'closemethod' => new external_value(PARAM_ALPHA, 'How it was closed: button or dismiss', VALUE_DEFAULT, ''),
         ]);
     }
 
@@ -46,18 +48,24 @@ class acknowledge extends external_api {
      * Execute.
      *
      * @param int $noticeid
+     * @param int $duration
+     * @param string $closemethod
      * @return array
      */
-    public static function execute(int $noticeid): array {
+    public static function execute(int $noticeid, int $duration = 0, string $closemethod = ''): array {
         global $USER;
 
-        ['noticeid' => $noticeid] = self::validate_parameters(self::execute_parameters(), ['noticeid' => $noticeid]);
+        $params = self::validate_parameters(self::execute_parameters(),
+            ['noticeid' => $noticeid, 'duration' => $duration, 'closemethod' => $closemethod]);
         self::validate_context(\context_system::instance());
 
         if (isguestuser() || \core\session\manager::is_loggedinas()) {
             return ['status' => false];
         }
-        return ['status' => manager::acknowledge($noticeid, (int) $USER->id)];
+        return ['status' => manager::acknowledge($params['noticeid'], (int) $USER->id, [
+            'duration' => $params['duration'],
+            'closemethod' => $params['closemethod'],
+        ])];
     }
 
     /**

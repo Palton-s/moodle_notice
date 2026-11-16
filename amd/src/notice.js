@@ -28,9 +28,9 @@ import Ajax from 'core/ajax';
 import Notification from 'core/notification';
 import {notifyFilterContentUpdated} from 'core_filters/events';
 
-const acknowledge = (noticeid) => Ajax.call([{
+const acknowledge = (noticeid, duration, closemethod) => Ajax.call([{
     methodname: 'local_notice_acknowledge',
-    args: {noticeid},
+    args: {noticeid, duration, closemethod},
 }])[0];
 
 /**
@@ -56,12 +56,17 @@ const showNotice = async(item, preview) => {
     const button = modal.getFooter().find('[data-action="local-notice-ok"]');
     button.text(item.dataset.button);
 
+    let shownAt = Date.now();
+    let closemethod = 'dismiss';
+
     return new Promise((resolve) => {
         button.on('click', (e) => {
             e.preventDefault();
+            closemethod = 'button';
             modal.hide();
         });
         root.on(ModalEvents.shown, () => {
+            shownAt = Date.now();
             notifyFilterContentUpdated(modal.getBody().get());
             button.trigger('focus');
         });
@@ -70,7 +75,8 @@ const showNotice = async(item, preview) => {
                 resolve();
                 return;
             }
-            acknowledge(noticeid).catch(Notification.exception).then(resolve);
+            const duration = Math.round((Date.now() - shownAt) / 1000);
+            acknowledge(noticeid, duration, closemethod).catch(Notification.exception).then(resolve);
         });
         modal.show();
     });

@@ -34,4 +34,13 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
+    // List of users who saw a notice, with IP address and browser.
+    'local/notice:viewreport' => [
+        'riskbitmask' => RISK_PERSONAL,
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 ];

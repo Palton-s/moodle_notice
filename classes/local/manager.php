@@ -34,6 +34,9 @@ class manager {
     /** @var string Acknowledgements table. */
     const TABLE_ACK = 'local_notice_ack';
 
+    /** @var string[] Accepted values for local_notice_ack.closemethod. */
+    const CLOSE_METHODS = ['button', 'dismiss'];
+
     /** @var string File area for embedded media. */
     const FILEAREA = 'content';
 
@@ -117,21 +120,31 @@ class manager {
     /**
      * Records that a user dismissed a notice.
      *
+     * The IP address and browser are taken from the current request.
+     *
      * @param int $noticeid
      * @param int $userid
+     * @param array $details optional 'duration' (seconds on screen) and 'closemethod' (one of CLOSE_METHODS)
      * @return bool true if the notice exists (and is now acknowledged)
      */
-    public static function acknowledge(int $noticeid, int $userid): bool {
+    public static function acknowledge(int $noticeid, int $userid, array $details = []): bool {
         global $DB;
         if (!$DB->record_exists(self::TABLE, ['id' => $noticeid])) {
             return false;
         }
         if (!$DB->record_exists(self::TABLE_ACK, ['noticeid' => $noticeid, 'userid' => $userid])) {
+            $closemethod = $details['closemethod'] ?? '';
+            $useragent = \core_useragent::get_user_agent_string();
             try {
                 $DB->insert_record(self::TABLE_ACK, (object) [
                     'noticeid' => $noticeid,
                     'userid' => $userid,
                     'timecreated' => time(),
+                    // Capped at one day: a tab left open overnight says nothing useful.
+                    'duration' => max(0, min((int) ($details['duration'] ?? 0), DAYSECS)),
+                    'closemethod' => in_array($closemethod, self::CLOSE_METHODS, true) ? $closemethod : null,
+                    'ipaddress' => getremoteaddr(null),
+                    'useragent' => $useragent ? \core_text::substr($useragent, 0, 255) : null,
                 ]);
             } catch (\dml_write_exception $e) {
                 // Double click / two tabs: unique index already has it. Nothing to do.
@@ -165,6 +178,27 @@ class manager {
         $DB->delete_records(self::TABLE, ['id' => $noticeid]);
         get_file_storage()->delete_area_files(context_system::instance()->id, 'local_notice', self::FILEAREA, $noticeid);
         self::bump_revision();
+    }
+
+    /**
+     * Converts a Y-m-d value from an HTML date input into a timestamp in the user's timezone.
+     *
+     * @param string $value
+     * @param bool $nextday true to return the start of the following day (exclusive upper bound)
+     * @return int 0 if empty or invalid
+     */
+    public static function parse_date_input(string $value, bool $nextday = false): int {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+            return 0;
+        }
+        $date = \DateTime::createFromFormat('!Y-m-d', $value, \core_date::get_user_timezone_object());
+        if (!$date || $date->format('Y-m-d') !== $value) {
+            return 0;
+        }
+        if ($nextday) {
+            $date->modify('+1 day');
+        }
+        return $date->getTimestamp();
     }
 
     /**

@@ -47,6 +47,10 @@ class provider implements
             'noticeid' => 'privacy:metadata:local_notice_ack:noticeid',
             'userid' => 'privacy:metadata:local_notice_ack:userid',
             'timecreated' => 'privacy:metadata:local_notice_ack:timecreated',
+            'duration' => 'privacy:metadata:local_notice_ack:duration',
+            'closemethod' => 'privacy:metadata:local_notice_ack:closemethod',
+            'ipaddress' => 'privacy:metadata:local_notice_ack:ipaddress',
+            'useragent' => 'privacy:metadata:local_notice_ack:useragent',
         ], 'privacy:metadata:local_notice_ack');
         $collection->add_database_table('local_notice', [
             'usermodified' => 'privacy:metadata:local_notice:usermodified',
@@ -94,7 +98,7 @@ class provider implements
                 continue;
             }
             $records = $DB->get_records_sql(
-                "SELECT a.id, n.title, a.timecreated
+                "SELECT a.id, n.title, a.timecreated, a.duration, a.closemethod, a.ipaddress, a.useragent
                    FROM {local_notice_ack} a
                    JOIN {local_notice} n ON n.id = a.noticeid
                   WHERE a.userid = :userid",
@@ -103,6 +107,10 @@ class provider implements
             $data = array_map(fn($r) => [
                 'title' => $r->title,
                 'timecreated' => transform::datetime($r->timecreated),
+                'duration' => $r->closemethod ? format_time((int) $r->duration) : null,
+                'closemethod' => $r->closemethod ? get_string('closemethod_' . $r->closemethod, 'local_notice') : null,
+                'ipaddress' => $r->ipaddress,
+                'useragent' => $r->useragent,
             ], array_values($records));
             if ($data) {
                 writer::with_context($context)->export_data(

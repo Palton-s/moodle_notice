@@ -99,7 +99,10 @@ echo html_writer::div(
 );
 
 $notices = $DB->get_records_sql(
-    "SELECT n.*, (SELECT COUNT(1) FROM {" . manager::TABLE_ACK . "} a WHERE a.noticeid = n.id) AS ackcount
+    "SELECT n.*, (SELECT COUNT(1)
+                    FROM {" . manager::TABLE_ACK . "} a
+                    JOIN {user} u ON u.id = a.userid AND u.deleted = 0
+                   WHERE a.noticeid = n.id) AS ackcount
        FROM {" . manager::TABLE . "} n
    ORDER BY n.timecreated DESC, n.id DESC"
 );
@@ -119,6 +122,7 @@ if (!$notices) {
         get_string('actions'),
     ];
     $dateformat = get_string('strftimedatetimeshort', 'langconfig');
+    $canviewreport = has_capability('local/notice:viewreport', context_system::instance());
 
     foreach ($notices as $n) {
         // Status badge.
@@ -149,11 +153,17 @@ if (!$notices) {
         $actions[] = $OUTPUT->action_icon(new moodle_url($baseurl, ['action' => 'delete', 'id' => $n->id]),
             new pix_icon('t/delete', get_string('delete')));
 
+        $seenby = (int) $n->ackcount;
+        if ($canviewreport) {
+            $seenby = html_writer::link(new moodle_url('/local/notice/views.php', ['id' => $n->id]), $seenby,
+                ['title' => get_string('viewsreport', 'local_notice', format_string($n->title))]);
+        }
+
         $table->data[] = [
             format_string($n->title),
             $status,
             $period,
-            (int) $n->ackcount,
+            $seenby,
             userdate($n->timemodified, $dateformat),
             implode(' ', $actions),
         ];
