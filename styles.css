@@ -25,31 +25,29 @@
 
 /* "Who saw" report. */
 .local-notice-filters {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-end;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
     gap: .75rem 1rem;
-}
-
-.local-notice-filters .local-notice-filter {
-    display: flex;
-    flex-direction: column;
-    min-width: 10rem;
+    align-items: end;
 }
 
 .local-notice-filters .local-notice-filter-search {
-    flex: 1 1 16rem;
+    grid-column: 1 / -1;
+}
+
+.local-notice-filters .local-notice-filter .form-label {
+    display: block;
+    margin-bottom: .25rem;
+}
+
+.local-notice-filters .local-notice-filter .form-control,
+.local-notice-filters .local-notice-filter .custom-select {
+    width: 100%;
 }
 
 .local-notice-filters .local-notice-filter-buttons {
-    flex-direction: row;
+    display: flex;
     gap: .5rem;
-    min-width: 0;
-}
-
-.local-notice-filters .form-label {
-    margin-bottom: .25rem;
 }
 
 .local-notice-summary .progress {

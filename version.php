@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_notice';
-$plugin->version   = 2026111601;
+$plugin->version   = 2026111602;
 $plugin->requires  = 2024042200; // Moodle 4.4 (hooks API for output).
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release   = '1.1.0';

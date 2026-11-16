@@ -35,7 +35,8 @@
         "reseturl": "https://example.com/local/notice/views.php?id=1"
     }
 }}
-<form method="get" action="{{action}}" class="local-notice-filters card card-body mb-3" role="search">
+<div class="card mb-3">
+<form method="get" action="{{action}}" class="card-body local-notice-filters" role="search">
     <input type="hidden" name="id" value="{{id}}">
     <div class="local-notice-filter local-notice-filter-search">
         <label for="local-notice-search" class="form-label">{{#str}}search, local_notice{{/str}}</label>
@@ -84,3 +85,4 @@
         {{/hasfilters}}
     </div>
 </form>
+</div>
