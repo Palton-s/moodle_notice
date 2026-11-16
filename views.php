@@ -98,7 +98,7 @@ echo html_writer::div(html_writer::link(new moodle_url('/local/notice/manage.php
 // Summary: how many active users saw it.
 $guestid = $CFG->siteguest;
 $activewhere = 'u.deleted = 0 AND u.suspended = 0 AND u.confirmed = 1 AND u.id <> :guestid';
-$totalactive = $DB->count_records_select('user', $activewhere, ['guestid' => $guestid]);
+$totalactive = $DB->count_records_sql("SELECT COUNT(1) FROM {user} u WHERE $activewhere", ['guestid' => $guestid]);
 $seenactive = $DB->count_records_sql(
     "SELECT COUNT(1)
        FROM {" . manager::TABLE_ACK . "} a
